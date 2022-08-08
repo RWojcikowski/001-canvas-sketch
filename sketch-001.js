@@ -1,32 +1,49 @@
 const canvasSketch = require("canvas-sketch");
 const math = require('canvas-sketch-util/math');
-
+const random = require('canvas-sketch-util/random')
 
 const settings = {
   dimensions: [1080, 1080],
+  animate: true,
 };
 
-const sketch = () => {
+const sketch = ({ context, width, height }) => {
   let x, y, w, h;
-  let  angle, rx, ry;
+  // let  angle, rx, ry;
+
+  const num = 20;
+  const degress = -30;
+
+  const rect =[];
+  for (let i = 0; i < num; i++) {
+      
+    x = random.range(0, width);
+    y = random.range (0, height);
+    w = random.range (200,600 );
+    h = random.range (40, 200);
+
+    rect.push({ x, y, w, h})
+  }
 
   return ({ context, width, height }) => {
     context.fillStyle = "white";
     context.fillRect(0, 0, width, height);
 
-    x = width * 0.5;
-    y = height * 0.5;
-    w = width * 0.6;
-    h = height * 0.1;
 
-    context.save();
-    context.translate(x, y);
-    context.strokeStyle = "black";
+    rect.forEach(rect => {
+      const {x, y, w, h} = rect;
     
-    drawSkewedRect({context});
-    context.stroke();
+      context.save();
+      context.translate(x, y);
+      context.strokeStyle = "black";
+      
+      drawSkewedRect({context, w, h, degress});
+      context.stroke();
+      
+      context.restore();
+      
     
-    context.restore();
+    })
   };
 };
 
