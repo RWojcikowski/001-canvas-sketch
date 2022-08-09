@@ -21,7 +21,7 @@ Project is created with:
 	
 ## Examples
 # here are some examples
-![](examples%20 859533.png)
-![](examples %20708242.png)
-![](examples %2052788.png)
+<img src="examples/859533.png" >
+<img src="examples/0708242.png" >
+<img src="examples/52788.png" >
 
