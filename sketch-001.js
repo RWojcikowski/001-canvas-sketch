@@ -34,7 +34,7 @@ random.setSeed(seed);
 
   const mask = {
     radius: width * 0.4,
-    sides: 5,
+    sides: 6,
     x: width * 0.5,
     y: height * 0.5,
   };
