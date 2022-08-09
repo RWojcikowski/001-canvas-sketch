@@ -10,7 +10,7 @@ const settings = {
 };
 
 const sketch = ({ context, width, height }) => {
-  let x, y, w, h, fill, stroke, blend ;
+  let x, y, w, h, fill, stroke, blend;
   // let  angle, rx, ry;
 
   const num = 40;
@@ -26,6 +26,13 @@ const sketch = ({ context, width, height }) => {
 
   const bgColor = random.pick(risoColors).hex;
 
+  const mask = {
+    radius: width * 0.4,
+    sides: 5,
+    x: width * 0.5,
+    y: height * 0.5,
+  };
+
   for (let i = 0; i < num; i++) {
     x = random.range(0, width);
     y = random.range(0, height);
@@ -35,7 +42,7 @@ const sketch = ({ context, width, height }) => {
     fill = random.pick(rectColors).hex;
     stroke = random.pick(rectColors).hex;
 
-    blend = ( random.value() > 0.5) ? 'overlay' : 'source-over';
+    blend = random.value() > 0.5 ? "overlay" : "source-over";
 
     rect.push({ x, y, w, h, fill, stroke, blend });
   }
@@ -44,18 +51,26 @@ const sketch = ({ context, width, height }) => {
     context.fillStyle = bgColor;
     context.fillRect(0, 0, width, height);
 
+    context.save();
+    context.translate(mask.x, mask.y);
+
+    //** mask for  elements **\\
+    drawPolygon({ context, radius: mask.radius, sides: mask.sides });
+
+    context.clip();
+
     rect.forEach((rect) => {
       const { x, y, w, h, fill, stroke, blend } = rect;
       let shadowColor;
 
       context.save();
+      context.translate(-mask.x, -mask.y);
       context.translate(x, y);
       context.strokeStyle = stroke;
       context.fillStyle = fill;
       context.lineWidth = 10;
 
-      context.globalCompositeOperation = blend ;
-      
+      context.globalCompositeOperation = blend;
 
       drawSkewedRect({ context, w, h, degress });
 
@@ -69,16 +84,28 @@ const sketch = ({ context, width, height }) => {
       context.fill();
       context.shadowColor = null;
 
-      context.globalCompositeOperation = 'source-over';
+      context.globalCompositeOperation = "source-over";
 
       context.lineWidth = 2;
       context.strokeStyle = "black";
       context.stroke();
 
-      context.stroke();
-
       context.restore();
     });
+
+    context.restore();
+
+    // polygon outline
+    context.save();
+    context.translate(mask.x, mask.y);
+
+    drawPolygon({ context, radius: mask.radius, sides: mask.sides });
+
+    context.globalCompositeOperation ='color-burn';
+    context.lineWidth = 20;  
+    context.strokeStyle = rectColors[0].hex;
+    context.stroke();
+    context.restore();
   };
 };
 
@@ -103,4 +130,16 @@ const drawSkewedRect = ({ context, w = 600, h = 200, degress = -45 }) => {
   context.restore();
 };
 
+const drawPolygon = ({ context, radius = 100, sides = 3 }) => {
+  const slice = (Math.PI * 2) / sides;
+
+  context.beginPath();
+  context.moveTo(0, -radius);
+
+  for (let i = 1; i < sides; i++) {
+    const theta = i * slice - Math.PI * 0.5;
+    context.lineTo(Math.cos(theta) * radius, Math.sin(theta) * radius);
+  }
+  context.closePath();
+};
 canvasSketch(sketch, settings);
